@@ -1,5 +1,7 @@
 // ignore_for_file: strict_top_level_inference, annotate_overrides
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebaseapp/services/login_service.dart';
 import 'package:flutter/material.dart';
 
 class CadastroPage extends StatefulWidget {
@@ -13,9 +15,30 @@ class _CadastroPageState extends State<CadastroPage> {
   final emailcontroller= TextEditingController();
   final senhacontroller= TextEditingController();
 
-  abrirTelaCadastro(BuildContext context){
-    Navigator.push(context,
-      MaterialPageRoute(builder:(context) => CadastroPage()));
+  cadastrarNovoUsuario() async{
+    try{
+    await LoginService.criarNovoUsuario(emailcontroller.text, senhacontroller.text);
+    showMensagem('Cadastro realizado com sucesso', false);
+    } on FirebaseAuthException catch (erro){
+      print(erro.code);
+    if(erro.code =='invalid-email'){
+      showMensagem('Email Inválido',true);
+    } else if(erro.code == 'weak-password'){
+      showMensagem('A senha precisa de 6 carac.', true);
+    } else if(erro.code == 'email-already-in-use'){
+      showMensagem('E-mail já está em uso', true);
+    }
+
+  }
+  }
+
+  showMensagem(String msg, bool error){
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: error ? Colors.red : Colors.blue,
+      )
+    );
   }
 
   Widget build(BuildContext context) {
@@ -39,7 +62,7 @@ class _CadastroPageState extends State<CadastroPage> {
             SizedBox(height: 50),
 
             TextField(
-              controller: senhacontroller,
+              controller: senhacontroller ,
               obscureText: true,
               decoration: InputDecoration(
                 label: Text('Senha'),
@@ -51,7 +74,9 @@ class _CadastroPageState extends State<CadastroPage> {
             ),
 
             ElevatedButton(
-              onPressed: (){}, 
+              onPressed: (){
+                cadastrarNovoUsuario();
+              }, 
               child: Text("Cadastrar")
               
             ),

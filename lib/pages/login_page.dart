@@ -17,8 +17,9 @@ class _LoginPageState extends State<LoginPage> {
   abrirTelaCadastro(BuildContext context){
     Navigator.push(context,
       MaterialPageRoute(builder:(context) => CadastroPage()));
-
   }
+
+  
 
   Widget build(BuildContext context) {
     return Scaffold(
